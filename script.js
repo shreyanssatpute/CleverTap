@@ -1,6 +1,6 @@
 // Function to fetch weather data from OpenWeatherMap API
 async function getWeatherData(location) {
-  const apiKey = '3e64bb558c78b52d3cfbdcb7306f2e73'; // Replace 'YOUR_API_KEY' with your OpenWeatherMap API key
+  const apiKey = '3e64bb558c78b52d3cfbdcb7306f2e73';
   const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
 
   try {
@@ -28,53 +28,38 @@ function showWeatherInfo(weatherData) {
     <p>Humidity: ${weatherData.main.humidity}%</p>
     <p>Visibility: ${weatherData.visibility / 1000} km</p>
   `;
+}
 
-  const weatherAnimationElement = document.getElementById('weatherAnimation');
-  weatherAnimationElement.className = '';
+// Send location event to CleverTap
+function sendLocationToCleverTap(location) {
+  clevertap.event.push("LocationEntered", { "Location": location });
+  console.log(`Location '${location}' sent to CleverTap.`);
+}
 
-  if (weatherData.weather[0].main === 'Clear') {
-    // Clear Sky
-    weatherAnimationElement.classList.add('clear-sky');
-  } else if (
-    weatherData.weather[0].main === 'Clouds' ||
-    weatherData.weather[0].main === 'Mist' ||
-    weatherData.weather[0].main === 'Haze'
-  ) {
-    // Cloudy
-    weatherAnimationElement.classList.add('cloudy');
-  } else if (
-    weatherData.weather[0].main === 'Rain' ||
-    weatherData.weather[0].main === 'Drizzle'
-  ) {
-    // Rain
-    weatherAnimationElement.classList.add('rain');
-  } else {
-    // Other conditions
-    weatherAnimationElement.classList.add('default');
+// Event listener for the "Get Weather" button
+document.getElementById('getWeatherBtn').addEventListener('click', () => {
+  const locationInput = document.getElementById('locationInput');
+  const location = locationInput.value.trim();
+
+  if (location !== '') {
+    // Send location to CleverTap
+    sendLocationToCleverTap(location);
+
+    getWeatherData(location)
+      .then((weatherData) => {
+        showWeatherInfo(weatherData);
+      })
+      .catch((error) => {
+        const weatherInfoElement = document.getElementById('weatherInfo');
+        weatherInfoElement.innerHTML = `<p>${error.message}</p>`;
+      });
   }
-}
+});
 
-// Function to handle geolocation success
-function handleGeolocationSuccess(position) {
-  const latitude = position.coords.latitude;
-  const longitude = position.coords.longitude;
+// Event listener for the geolocation button
+document.getElementById('geolocationBtn').addEventListener('click', fetchWeatherByGeolocation);
 
-  getWeatherData(`${latitude},${longitude}`)
-    .then((weatherData) => {
-      showWeatherInfo(weatherData);
-    })
-    .catch((error) => {
-      const weatherInfoElement = document.getElementById('weatherInfo');
-      weatherInfoElement.innerHTML = `<p>${error.message}</p>`;
-    });
-}
-
-// Function to handle geolocation error
-function handleGeolocationError(error) {
-  console.log('Geolocation error:', error);
-}
-
-// Function to fetch weather data based on geolocation
+// Function to handle geolocation
 function fetchWeatherByGeolocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
@@ -82,6 +67,9 @@ function fetchWeatherByGeolocation() {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         const location = `${latitude},${longitude}`;
+
+        // Send geolocation to CleverTap
+        sendLocationToCleverTap(location);
 
         getWeatherData(location)
           .then((weatherData) => {
@@ -101,33 +89,13 @@ function fetchWeatherByGeolocation() {
   }
 }
 
-// Event listener for the geolocation button
-document.getElementById('geolocationBtn').addEventListener('click', fetchWeatherByGeolocation);
-
-// Event listener for the "Get Weather" button
-document.getElementById('getWeatherBtn').addEventListener('click', () => {
-  const locationInput = document.getElementById('locationInput');
-  const location = locationInput.value.trim();
-
-  if (location !== '') {
-    getWeatherData(location)
-      .then((weatherData) => {
-        showWeatherInfo(weatherData);
-      })
-      .catch((error) => {
-        const weatherInfoElement = document.getElementById('weatherInfo');
-        weatherInfoElement.innerHTML = `<p>${error.message}</p>`;
-      });
-  }
-});
-
 // Autocomplete for location input
 $(function () {
   const locationInput = document.getElementById('locationInput');
 
   $(locationInput).autocomplete({
     source: function (request, response) {
-      const apiKey = '3e64bb558c78b52d3cfbdcb7306f2e73'; // Replace 'YOUR_API_KEY' with your OpenWeatherMap API key
+      const apiKey = '3e64bb558c78b52d3cfbdcb7306f2e73';
       const autocompleteUrl = `https://api.openweathermap.org/data/2.5/find?q=${request.term}&appid=${apiKey}`;
 
       $.ajax({
