@@ -1,6 +1,6 @@
 // Function to fetch weather data from OpenWeatherMap API
 async function getWeatherData(location) {
-  const apiKey = '3e64bb558c78b52d3cfbdcb7306f2e73';
+  const apiKey = '3e64bb558c78b52d3cfbdcb7306f2e73'; // Replace with your OpenWeatherMap API key
   const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
 
   try {
@@ -18,22 +18,39 @@ async function getWeatherData(location) {
 }
 
 // Function to display weather information
-function showWeatherInfo(weatherData) {
+function showWeatherInfo(weatherData, location) {
   const weatherInfoElement = document.getElementById('weatherInfo');
+  const weatherDescription = weatherData.weather[0].main; // Weather condition (e.g., Cloudy, Clear, etc.)
+  const isCloudy = weatherDescription.includes('Cloud'); // Check if it's cloudy
+
+  // Display weather info
   weatherInfoElement.innerHTML = `
     <h2 style="text-align: center;">${weatherData.name}</h2>
     <p style="font-size: 20px;">Temperature: ${weatherData.main.temp}°C</p>
-    <p>Weather: ${weatherData.weather[0].description}</p>
+    <p>Weather: ${weatherDescription}</p>
     <p>Wind Speed: ${weatherData.wind.speed} km/h</p>
     <p>Humidity: ${weatherData.main.humidity}%</p>
     <p>Visibility: ${weatherData.visibility / 1000} km</p>
   `;
-}
 
-// Send location event to CleverTap
-function sendLocationToCleverTap(location) {
-  clevertap.event.push("LocationEntered", { "Location": location });
-  console.log(`Location '${location}' sent to CleverTap.`);
+  // Send data to CleverTap
+  clevertap.event.push("Weather Check", {
+    "Location": location,        // User-entered location
+    "Weather Description": weatherDescription, // Weather condition
+    "Is Cloudy": isCloudy        // Boolean: whether it's cloudy or not
+  });
+
+  // Handle weather animation (optional)
+  const weatherAnimationElement = document.getElementById('weatherAnimation');
+  weatherAnimationElement.className = '';
+
+  if (isCloudy) {
+    weatherAnimationElement.classList.add('cloudy');
+  } else if (weatherDescription === 'Clear') {
+    weatherAnimationElement.classList.add('clear-sky');
+  } else {
+    weatherAnimationElement.classList.add('default');
+  }
 }
 
 // Event listener for the "Get Weather" button
@@ -42,12 +59,9 @@ document.getElementById('getWeatherBtn').addEventListener('click', () => {
   const location = locationInput.value.trim();
 
   if (location !== '') {
-    // Send location to CleverTap
-    sendLocationToCleverTap(location);
-
     getWeatherData(location)
       .then((weatherData) => {
-        showWeatherInfo(weatherData);
+        showWeatherInfo(weatherData, location);
       })
       .catch((error) => {
         const weatherInfoElement = document.getElementById('weatherInfo');
@@ -57,10 +71,7 @@ document.getElementById('getWeatherBtn').addEventListener('click', () => {
 });
 
 // Event listener for the geolocation button
-document.getElementById('geolocationBtn').addEventListener('click', fetchWeatherByGeolocation);
-
-// Function to handle geolocation
-function fetchWeatherByGeolocation() {
+document.getElementById('geolocationBtn').addEventListener('click', () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -68,12 +79,9 @@ function fetchWeatherByGeolocation() {
         const longitude = position.coords.longitude;
         const location = `${latitude},${longitude}`;
 
-        // Send geolocation to CleverTap
-        sendLocationToCleverTap(location);
-
         getWeatherData(location)
           .then((weatherData) => {
-            showWeatherInfo(weatherData);
+            showWeatherInfo(weatherData, location);
           })
           .catch((error) => {
             const weatherInfoElement = document.getElementById('weatherInfo');
@@ -87,28 +95,4 @@ function fetchWeatherByGeolocation() {
   } else {
     console.log('Geolocation is not supported by this browser.');
   }
-}
-
-// Autocomplete for location input
-$(function () {
-  const locationInput = document.getElementById('locationInput');
-
-  $(locationInput).autocomplete({
-    source: function (request, response) {
-      const apiKey = '3e64bb558c78b52d3cfbdcb7306f2e73';
-      const autocompleteUrl = `https://api.openweathermap.org/data/2.5/find?q=${request.term}&appid=${apiKey}`;
-
-      $.ajax({
-        url: autocompleteUrl,
-        method: 'GET',
-        success: function (data) {
-          response(data.list.map((item) => item.name));
-        },
-      });
-    },
-    select: function (event, ui) {
-      locationInput.value = ui.item.name;
-      return false;
-    },
-  });
 });
