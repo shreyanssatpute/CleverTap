@@ -5,55 +5,49 @@
   <link rel="stylesheet" type="text/css" href="style.css">
   <script type="text/javascript">
     var clevertap = {
-  event: [],
-  profile: [],
-  account: [],
-  onUserLogin: [],
-  notifications: [],
-  privacy: []
-};
+      event: [],
+      profile: [],
+      account: [],
+      onUserLogin: [],
+      notifications: [],
+      privacy: []
+    };
 
-clevertap.account.push({ id: "RZ7-599-8R7Z" });
-clevertap.privacy.push({ optout: true }); // set the flag to true if the user of the device opts out of sharing their data
-clevertap.privacy.push({ useIP: true }); // set the flag to true if the user agrees to share their IP data
+    clevertap.account.push({ id: "RZ7-599-8R7Z" });
+    clevertap.privacy.push({ optout: true }); // set the flag to true if the user of the device opts out of sharing their data
+    clevertap.privacy.push({ useIP: true }); // set the flag to true if the user agrees to share their IP data
 
-(function() {
-  var wzrk = document.createElement('script');
-  wzrk.type = 'text/javascript';
-  wzrk.async = true;
-  wzrk.src = 'https://d2r1yp2w7bby2u.cloudfront.net/js/a.js';
-  var s = document.getElementsByTagName('script')[0];
-  s.parentNode.insertBefore(wzrk, s);
-})();
+    (function() {
+      var wzrk = document.createElement('script');
+      wzrk.type = 'text/javascript';
+      wzrk.async = true;
+      wzrk.src = 'https://d2r1yp2w7bby2u.cloudfront.net/js/a.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(wzrk, s);
+    })();
   </script>
   <style>
-    
     .container {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
     .input-container {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: center;
-
     }
-
     .f {
       font-size: 14px;
       padding: 8px;
       margin-right: 10px;
     }
-
     .but {
       display: flex;
       flex-direction: row;
       justify-content: center;
     }
-
     .but button {
       font-size: 16px;
       border-radius:15px;
@@ -65,30 +59,20 @@ clevertap.privacy.push({ useIP: true }); // set the flag to true if the user agr
   
   <div class="container">
     <h1>Weather App</h1>
-    <br>
-    <br>
-    <br>
-
+    <br><br><br>
     <div id="weatherAnimation"></div>
     <div id="weatherInfo"></div>
-    <br>
-    <br>
+    <br><br>
     <div class="input-container">
       <input class="f" type="text" id="locationInput" placeholder="Enter location">
-      <button id="getWeatherBtn">&#x1F50D      </button>
-
-    
+      <button id="getWeatherBtn">&#x1F50D</button>
+    </div>
     <br>
     <div class="but">
       <button id="geolocationBtn">&#x1F4CD</button>
     </div>
-</div>
   </div>
-  
 
   <script src="script.js"></script>
- 
-
-
 </body>
 </html>
