@@ -39,9 +39,9 @@ function showWeatherInfo(weatherData, location) {
     <h2 style="text-align: center;">${location}</h2>
     <p style="font-size: 20px;">Temperature: ${weatherData.Temperature.Metric.Value}°C</p>
     <p>Weather: ${weatherDescription}</p>
-    <p>Wind Speed: ${weatherData.Wind.Speed.Metric.Value} km/h</p>
+   
     <p>Humidity: ${weatherData.RelativeHumidity}%</p>
-    <p>Visibility: ${weatherData.Visibility.Metric.Value} km</p>
+    
   `;
 
   // Send data to CleverTap
