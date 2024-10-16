@@ -1,45 +1,43 @@
-// Function to fetch location key from AccuWeather API
 async function getLocationKey(location) {
-  const apiKey = 'MxAqOsOAdZMHmpVmSFE6Af2a3HJhoT4a'; // Replace with your AccuWeather API key
+  const apiKey = 'MxAqOsOAdZMHmpVmSFE6Af2a3HJhoT4a'; 
   const locationUrl = `https://dataservice.accuweather.com/locations/v1/cities/search?apikey=${apiKey}&q=${encodeURIComponent(location)}`;
 
   const response = await fetch(locationUrl);
   const data = await response.json();
 
   if (response.ok && data.length > 0) {
-    return data[0].Key; // Return the location key of the first result
+    return data[0].Key; 
   } else {
     throw new Error(data.Message || 'Failed to fetch location key');
   }
 }
 
-// Function to fetch weather data using location key
+
 async function getWeatherData(locationKey) {
-  const apiKey = 'MxAqOsOAdZMHmpVmSFE6Af2a3HJhoT4a'; // Replace with your AccuWeather API key
+  const apiKey = 'MxAqOsOAdZMHmpVmSFE6Af2a3HJhoT4a'; 
   const weatherUrl = `https://dataservice.accuweather.com/currentconditions/v1/${locationKey}?apikey=${apiKey}`;
 
   const response = await fetch(weatherUrl);
   const data = await response.json();
 
   if (response.ok) {
-    return data[0]; // Return the first weather condition
+    return data[0]; 
   } else {
     throw new Error(data.Message || 'Failed to fetch weather data');
   }
 }
 
-// Function to display weather information
+
 function showWeatherInfo(weatherData, location) {
   const weatherInfoElement = document.getElementById('weatherInfo');
-  const weatherDescription = weatherData.WeatherText; // Weather condition (e.g., Cloudy, Clear, etc.)
-  const isCloudy = weatherDescription.includes('Cloud'); // Check if it's cloudy
+  const weatherDescription = weatherData.WeatherText; 
+  const isCloudy = weatherDescription.includes('Cloud'); 
 
   // Display weather info
   weatherInfoElement.innerHTML = `
     <h2 style="text-align: center;">${location}</h2>
     <p style="font-size: 20px;">Temperature: ${weatherData.Temperature.Metric.Value}°C</p>
     <p>Weather: ${weatherDescription}</p>
-   
     <p>Humidity: ${weatherData.RelativeHumidity}%</p>
     
   `;
